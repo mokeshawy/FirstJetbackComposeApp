@@ -1,6 +1,7 @@
 package com.example.firstappcompose
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,19 +39,18 @@ class MainActivity3 : ComponentActivity() {
 
     private fun ComponentActivity.setComposableMethods() =
         setContent {
-            BoxWidget()
+            BoxWidget{
+                Toast.makeText(this,"Hello",Toast.LENGTH_SHORT).show()
+            }
         }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun BoxWidget() {
-        val shape = RectangleShape
-        Box(
+    fun BoxWidget(onItemCLicked : () -> Unit) {
+        Card(onClick = onItemCLicked ,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .border(1.dp, Color.White, shape)
-                .background(Color.LightGray)
-                .padding(16.dp)
+                .padding(10.dp)
         ) {
             RoWidget()
         }
@@ -69,22 +71,17 @@ class MainActivity3 : ComponentActivity() {
         Image(
             painter = painterResource(id = R.drawable.jetpack_compose_icon),
             contentDescription = "",
-            modifier = Modifier
-                .width(100.dp)
-                .height(100.dp)
-                .background(Color.Black)
+            modifier = Modifier.width(100.dp)
         )
     }
 
     @Composable
     fun ColumnWidget() {
         Column {
-            Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = "The standard Lorem Ipsum passage",
                 style = TextStyle(fontSize = 17.sp, fontFamily = FontFamily.Default)
             )
-            Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ")
         }
     }

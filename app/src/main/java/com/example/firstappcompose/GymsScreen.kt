@@ -1,11 +1,13 @@
 package com.example.firstappcompose
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -17,10 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,15 +31,14 @@ import com.example.GymModel
 import com.example.firstappcompose.ui.theme.Purple40
 
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GymList(onItemCLicked: (GymModel, Int) -> Unit) {
+fun GymList() {
     val viewModel: GymViewModel = viewModel()
     LazyColumn {
-        item {
-            viewModel.getGymList().forEachIndexed { index, gymModel ->
-                GymItem(gymModel) {
-                    onItemCLicked(it, index)
-                }
+        items(viewModel.state) { gym ->
+            GymItem(gym) { id ->
+                viewModel.handleFavoriteState(id)
             }
         }
     }
@@ -49,9 +46,8 @@ fun GymList(onItemCLicked: (GymModel, Int) -> Unit) {
 
 
 @Composable
-fun GymItem(gymModel: GymModel, onItemCLicked: (GymModel) -> Unit) {
-    var isFavoriteChange by remember { mutableStateOf(false) }
-    val icon = if (isFavoriteChange) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder
+fun GymItem(gymModel: GymModel, onItemCLicked: (Int) -> Unit) {
+    val icon = if (gymModel.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier.padding(8.dp)
@@ -60,8 +56,7 @@ fun GymItem(gymModel: GymModel, onItemCLicked: (GymModel) -> Unit) {
             DefaultIcon(Icons.Filled.Place, Modifier.weight(0.15f))
             GymDetails(gymModel, Modifier.weight(0.70f))
             DefaultIcon(icon, Modifier.weight(0.15f)) {
-                isFavoriteChange = !isFavoriteChange
-                onItemCLicked(gymModel)
+                onItemCLicked(gymModel.id)
             }
         }
     }
@@ -87,7 +82,9 @@ fun DefaultIcon(icon: ImageVector, modifier: Modifier, onItemCLicked: () -> Unit
     Image(
         imageVector = icon,
         contentDescription = "",
-        modifier = modifier.padding(10.dp).clickable { onItemCLicked() },
+        modifier = modifier
+            .padding(10.dp)
+            .clickable { onItemCLicked() },
         colorFilter = ColorFilter.tint(Color.DarkGray)
     )
 }

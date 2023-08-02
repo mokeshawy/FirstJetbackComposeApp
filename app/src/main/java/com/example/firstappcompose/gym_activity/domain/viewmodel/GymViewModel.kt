@@ -1,12 +1,12 @@
-package com.example.firstappcompose
+package com.example.firstappcompose.gym_activity.domain.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.GymModel
-import com.example.listOfGym
+import com.example.firstappcompose.gym_activity.domain.model.GymModel
+import com.example.firstappcompose.gym_activity.domain.model.listOfGym
 
 const val GYM_IDS = "GYM_IDS"
 

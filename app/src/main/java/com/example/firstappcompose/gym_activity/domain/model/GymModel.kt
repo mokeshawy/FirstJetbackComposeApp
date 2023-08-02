@@ -1,4 +1,4 @@
-package com.example
+package com.example.firstappcompose.gym_activity.domain.model
 
 
 val listOfGym = listOf(

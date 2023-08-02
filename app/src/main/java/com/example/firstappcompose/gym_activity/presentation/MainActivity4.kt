@@ -1,9 +1,9 @@
-package com.example.firstappcompose
+package com.example.firstappcompose.gym_activity.presentation
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.example.firstappcompose.gym_activity.presentation.screen.GymList
 
 class MainActivity4 : ComponentActivity() {
 

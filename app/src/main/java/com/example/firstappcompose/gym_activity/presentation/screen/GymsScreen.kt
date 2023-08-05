@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.firstappcompose.gym_activity.domain.model.GymModel
+import com.example.firstappcompose.gym_activity.data.response.GymsResponseDto
 import com.example.firstappcompose.gym_activity.domain.viewmodel.GymViewModel
 import com.example.firstappcompose.ui.theme.Purple40
 
@@ -36,6 +36,10 @@ import com.example.firstappcompose.ui.theme.Purple40
 @Composable
 fun GymList() {
     val viewModel: GymViewModel = viewModel()
+    Thread {
+        viewModel.getGymList()
+    }.start()
+
     LazyColumn {
         items(viewModel.state) { gym ->
             GymItem(gym) { id ->
@@ -47,7 +51,7 @@ fun GymList() {
 
 
 @Composable
-fun GymItem(gymModel: GymModel, onItemCLicked: (Int) -> Unit) {
+fun GymItem(gymModel: GymsResponseDto, onItemCLicked: (Int) -> Unit) {
     val icon = if (gymModel.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -64,12 +68,12 @@ fun GymItem(gymModel: GymModel, onItemCLicked: (Int) -> Unit) {
 }
 
 @Composable
-fun GymDetails(gymModel: GymModel, modifier: Modifier) {
+fun GymDetails(gymModel: GymsResponseDto, modifier: Modifier) {
     Column(modifier = modifier) {
-        Text(text = gymModel.gymName, style = MaterialTheme.typography.titleLarge, color = Purple40)
+        Text(text = gymModel.gym_name, style = MaterialTheme.typography.titleLarge, color = Purple40)
         CompositionLocalProvider(LocalContentColor.provides(Color.Gray)) {
             Text(
-                text = gymModel.gymDescription,
+                text = gymModel.gym_location,
                 fontSize = 20.sp,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall

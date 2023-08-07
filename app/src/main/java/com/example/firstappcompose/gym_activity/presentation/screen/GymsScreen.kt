@@ -36,10 +36,6 @@ import com.example.firstappcompose.ui.theme.Purple40
 @Composable
 fun GymList() {
     val viewModel: GymViewModel = viewModel()
-    Thread {
-        viewModel.getGymList()
-    }.start()
-
     LazyColumn {
         items(viewModel.state) { gym ->
             GymItem(gym) { id ->
@@ -70,7 +66,11 @@ fun GymItem(gymModel: GymsResponseDto, onItemCLicked: (Int) -> Unit) {
 @Composable
 fun GymDetails(gymModel: GymsResponseDto, modifier: Modifier) {
     Column(modifier = modifier) {
-        Text(text = gymModel.gym_name, style = MaterialTheme.typography.titleLarge, color = Purple40)
+        Text(
+            text = gymModel.gym_name,
+            style = MaterialTheme.typography.titleLarge,
+            color = Purple40
+        )
         CompositionLocalProvider(LocalContentColor.provides(Color.Gray)) {
             Text(
                 text = gymModel.gym_location,

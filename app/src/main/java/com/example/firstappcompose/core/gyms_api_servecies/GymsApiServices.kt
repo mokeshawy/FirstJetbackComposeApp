@@ -1,11 +1,14 @@
 package com.example.firstappcompose.core.gyms_api_servecies
 
-import com.example.firstappcompose.gym_activity.data.response.GymsResponseDto
-import retrofit2.Call
+import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface GymsApiServices {
 
     @GET("gyms.json")
-    fun getGyms() : Call<List<GymsResponseDto>>
+    suspend fun getGyms(): List<GymsResponseDto>
+
+    @GET("gyms.json?orderBy\"id\"")
+    suspend fun getGymById(@Query("id") id: Int): Map<String, GymsResponseDto>
 }

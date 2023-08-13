@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.presentation.screen
+package com.example.firstappcompose.gym_activity.main_screen.presentation.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -27,8 +27,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.firstappcompose.gym_activity.data.response.GymsResponseDto
-import com.example.firstappcompose.gym_activity.domain.viewmodel.GymViewModel
+import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
+import com.example.firstappcompose.gym_activity.main_screen.domain.viewmodel.GymViewModel
 import com.example.firstappcompose.ui.theme.Purple40
 
 

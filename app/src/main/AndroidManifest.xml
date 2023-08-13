@@ -39,7 +39,7 @@
         </activity>
 
         <activity
-            android:name=".gym_activity.presentation.MainActivity4"
+            android:name=".gym_activity.MainActivity4"
             android:exported="true"
             android:theme="@style/Theme.FirstAppCompose">
             <intent-filter>

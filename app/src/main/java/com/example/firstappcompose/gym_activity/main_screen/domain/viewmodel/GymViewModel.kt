@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.domain.viewmodel
+package com.example.firstappcompose.gym_activity.main_screen.domain.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
-import com.example.firstappcompose.gym_activity.data.response.GymsResponseDto
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -20,7 +22,8 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
     var state by mutableStateOf(emptyList<GymsResponseDto>())
 
     private var gymsApiServices: GymsApiServices
-    lateinit var GymsResponseDtoCall: Call<List<GymsResponseDto>>
+    private val job = Job()
+    private val customCoroutine = CoroutineScope(context = job + Dispatchers.IO)
 
     init {
         val retrofit = Retrofit.Builder()
@@ -33,22 +36,12 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
     }
 
     private fun getGymList() {
-        GymsResponseDtoCall = gymsApiServices.getGyms()
-        GymsResponseDtoCall.enqueue(object : Callback<List<GymsResponseDto>> {
-            override fun onResponse(
-                call: Call<List<GymsResponseDto>>, response: Response<List<GymsResponseDto>>
-            ) {
-                response.body()?.let { gymsList ->
-                    state = gymsList.retrieveGymIds()
-                }
+        customCoroutine.launch {
+            val gyms = gymsApiServices.getGyms()
+            withContext(Dispatchers.Main){
+                state = gyms.retrieveGymIds()
             }
-
-            override fun onFailure(call: Call<List<GymsResponseDto>>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
-
-        })
-
+        }
     }
 
     fun handleFavoriteState(id: Int) {
@@ -77,6 +70,6 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        GymsResponseDtoCall.cancel()
+        job.cancel()
     }
 }

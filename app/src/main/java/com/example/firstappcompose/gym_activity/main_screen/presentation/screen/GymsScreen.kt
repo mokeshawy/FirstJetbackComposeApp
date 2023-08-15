@@ -34,50 +34,38 @@ import com.example.firstappcompose.ui.theme.Purple40
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GymList() {
+fun GymList(onItemCLicked: (Int) -> Unit) {
     val viewModel: GymViewModel = viewModel()
     LazyColumn {
         items(viewModel.state) { gym ->
-            GymItem(gym) { id ->
-                viewModel.handleFavoriteState(id)
-            }
+            GymItem(
+                gym,
+                onFavoriteItemClicked = { viewModel.handleFavoriteState(it) },
+                onItemCLicked = { onItemCLicked(it) })
         }
     }
 }
 
 
 @Composable
-fun GymItem(gymModel: GymsResponseDto, onItemCLicked: (Int) -> Unit) {
+fun GymItem(
+    gymModel: GymsResponseDto,
+    onFavoriteItemClicked: (Int) -> Unit,
+    onItemCLicked: (Int) -> Unit
+) {
     val icon = if (gymModel.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { onItemCLicked(gymModel.id) },
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
             DefaultIcon(Icons.Filled.Place, Modifier.weight(0.15f))
             GymDetails(gymModel, Modifier.weight(0.70f))
             DefaultIcon(icon, Modifier.weight(0.15f)) {
-                onItemCLicked(gymModel.id)
+                onFavoriteItemClicked(gymModel.id)
             }
-        }
-    }
-}
-
-@Composable
-fun GymDetails(gymModel: GymsResponseDto, modifier: Modifier) {
-    Column(modifier = modifier) {
-        Text(
-            text = gymModel.gym_name,
-            style = MaterialTheme.typography.titleLarge,
-            color = Purple40
-        )
-        CompositionLocalProvider(LocalContentColor.provides(Color.Gray)) {
-            Text(
-                text = gymModel.gym_location,
-                fontSize = 20.sp,
-                maxLines = 1,
-                style = MaterialTheme.typography.bodySmall
-            )
         }
     }
 }
@@ -93,3 +81,28 @@ fun DefaultIcon(icon: ImageVector, modifier: Modifier, onItemCLicked: () -> Unit
         colorFilter = ColorFilter.tint(Color.DarkGray)
     )
 }
+
+@Composable
+fun GymDetails(
+    gymModel: GymsResponseDto,
+    modifier: Modifier,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start
+) {
+    Column(modifier = modifier, horizontalAlignment = horizontalAlignment) {
+        Text(
+            text = gymModel.gym_name,
+            style = MaterialTheme.typography.titleLarge,
+            color = Purple40
+        )
+        CompositionLocalProvider(LocalContentColor.provides(Color.Gray)) {
+            Text(
+                text = gymModel.gym_location,
+                fontSize = 20.sp,
+                maxLines = 4,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+

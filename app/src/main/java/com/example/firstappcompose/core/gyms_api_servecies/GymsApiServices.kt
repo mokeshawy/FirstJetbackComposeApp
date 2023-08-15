@@ -9,6 +9,6 @@ interface GymsApiServices {
     @GET("gyms.json")
     suspend fun getGyms(): List<GymsResponseDto>
 
-    @GET("gyms.json?orderBy\"id\"")
-    suspend fun getGymById(@Query("id") id: Int): Map<String, GymsResponseDto>
+    @GET("gyms.json?orderBy=\"id\"")
+    suspend fun getGymById(@Query("equalTo") id: Int): Map<String, GymsResponseDto>
 }

@@ -39,8 +39,8 @@ fun GymDetailsScreen() {
             )
 
             Text(
-                text = if (it.is_open) "Gym is Open" else "Gym is Closed",
-                color = if (it.is_open) Color.Green else Color.Red
+                text = if (it.gymStatus) "Gym is Open" else "Gym is Closed",
+                color = if (it.gymStatus) Color.Green else Color.Red
             )
         }
     }

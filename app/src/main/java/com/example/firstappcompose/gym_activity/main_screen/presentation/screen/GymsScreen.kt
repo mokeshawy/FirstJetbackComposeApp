@@ -90,13 +90,13 @@ fun GymDetails(
 ) {
     Column(modifier = modifier, horizontalAlignment = horizontalAlignment) {
         Text(
-            text = gymModel.gym_name,
+            text = gymModel.name,
             style = MaterialTheme.typography.titleLarge,
             color = Purple40
         )
         CompositionLocalProvider(LocalContentColor.provides(Color.Gray)) {
             Text(
-                text = gymModel.gym_location,
+                text = gymModel.location,
                 fontSize = 20.sp,
                 maxLines = 4,
                 style = MaterialTheme.typography.bodySmall

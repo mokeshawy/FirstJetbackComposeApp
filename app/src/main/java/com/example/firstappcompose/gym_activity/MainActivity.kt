@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.example.firstappcompose.gym_activity.gym_details.presentation.GymDetailsScreen
 import com.example.firstappcompose.gym_activity.main_screen.presentation.screen.GymList
 
-class MainActivity4 : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

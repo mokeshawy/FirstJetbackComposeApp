@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.firstappcompose.application.GymsApplication.Companion.getApplicationContext
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
 import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
+import com.example.firstappcompose.gym_activity.main_screen.domain.room.GymDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,6 +27,8 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
     private val job = Job()
     private val customCoroutine = CoroutineScope(context = job + Dispatchers.IO)
 
+    private var gymDao = GymDatabase.getDaoInstance(getApplicationContext())
+
     init {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
@@ -37,10 +41,19 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
     private fun getGymList() {
         customCoroutine.launch {
-            val gyms = gymsApiServices.getGyms()
-            withContext(Dispatchers.Main){
-                state = gyms.retrieveGymIds()
+            withContext(Dispatchers.Main) {
+                state = getAllGyms().retrieveGymIds()
             }
+        }
+    }
+
+    private suspend fun getAllGyms() = withContext(Dispatchers.IO) {
+        try {
+            val gyms = gymsApiServices.getGyms()
+            gymDao.addAll(gyms)
+            return@withContext gyms
+        } catch (e: Exception) {
+            gymDao.getAll()
         }
     }
 

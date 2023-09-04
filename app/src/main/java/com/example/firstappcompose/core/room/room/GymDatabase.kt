@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.main_screen.domain.room
+package com.example.firstappcompose.core.room.room
 
 import android.content.Context
 import androidx.room.Database

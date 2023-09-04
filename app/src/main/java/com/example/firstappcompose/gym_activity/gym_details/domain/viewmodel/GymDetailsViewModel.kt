@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.firstappcompose.application.GymsApplication
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
+import com.example.firstappcompose.core.room.room.GymDatabase
 import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +20,9 @@ class GymDetailsViewModel(private val stateHandle: SavedStateHandle) : ViewModel
 
     var state by mutableStateOf<GymsResponseDto?>(null)
     private var apiServices: GymsApiServices
+
+    private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
+
 
     init {
         val retrofit = Retrofit.Builder()
@@ -31,7 +36,7 @@ class GymDetailsViewModel(private val stateHandle: SavedStateHandle) : ViewModel
 
     private fun getGym(id: Int) {
         viewModelScope.launch {
-            val gym = getGymFromRemoteById(id)
+            val gym = gymDao.getGymDetails(id)
             state = gym
         }
     }

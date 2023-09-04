@@ -20,5 +20,6 @@ data class GymsResponseDto(
     @ColumnInfo("gym_status")
     @SerializedName("is_open")
     val gymStatus: Boolean,
-    var isFavorite: Boolean = false
+    @ColumnInfo("isFavorite")
+    val isFavorite: Boolean = false
 )

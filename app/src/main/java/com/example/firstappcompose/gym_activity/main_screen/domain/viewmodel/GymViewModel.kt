@@ -1,90 +1,67 @@
 package com.example.firstappcompose.gym_activity.main_screen.domain.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.firstappcompose.application.GymsApplication.Companion.getApplicationContext
-import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
-import com.example.firstappcompose.core.room.room.GymDatabase
+import com.example.firstappcompose.gym_activity.main_screen.data.repository.GymsRepositoryImpl
 import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
-import com.example.firstappcompose.gym_activity.main_screen.domain.model.GymFavoriteState
+import com.example.firstappcompose.gym_activity.main_screen.domain.model.GymsScreenState
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 const val GYM_IDS = "GYM_IDS"
 
 class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
-    var state by mutableStateOf(emptyList<GymsResponseDto>())
+    private var _state by mutableStateOf(
+        GymsScreenState(gyms = emptyList(), isLoading = true)
+    )
+    val state: State<GymsScreenState> get() = derivedStateOf { _state }
 
-    private var gymsApiServices: GymsApiServices
     private val job = Job()
     private val customCoroutine = CoroutineScope(context = job + Dispatchers.IO)
 
-    private var gymDao = GymDatabase.getDaoInstance(getApplicationContext())
+    private val gymsRepositoryImpl = GymsRepositoryImpl()
+
+    private val errorHandler = CoroutineExceptionHandler { _, th ->
+        th.printStackTrace()
+        _state = _state.copy(isLoading = false, errorMessage = th.message)
+    }
 
     init {
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://jetbackcompose-default-rtdb.firebaseio.com/")
-            .build()
-        gymsApiServices = retrofit.create(GymsApiServices::class.java)
         getGymList()
     }
 
     private fun getGymList() {
-        customCoroutine.launch {
+        customCoroutine.launch(errorHandler) {
             withContext(Dispatchers.Main) {
-                state = getAllGyms()
+                val gyms = gymsRepositoryImpl.getAllGyms()
+                _state = _state.copy(gyms = gyms, isLoading = false)
             }
         }
     }
 
-    private suspend fun getAllGyms() = withContext(Dispatchers.IO) {
-        try {
-            updateLocalDatabase()
-        } catch (e: Exception) {
-            if (gymDao.getAll().isEmpty())
-                throw Exception("Something wrong. No data was found, try connect to internet")
-        }
-        gymDao.getAll()
-    }
-
-    private suspend fun updateLocalDatabase() {
-        val gyms = gymsApiServices.getGyms()
-        val favoriteGymsList = gymDao.getFavoriteGyms()
-        gymDao.addAll(gyms)
-        gymDao.updateAll(
-            favoriteGymsList.map {
-                GymFavoriteState(id = it.id, true)
-            }
-        )
-    }
 
     fun handleFavoriteState(id: Int) {
-        val list = state.toMutableList()
+        val list = _state.gyms.toMutableList()
         val indexOf = list.indexOfFirst { it.id == id }
         //list[indexOf] = list[indexOf].copy(isFavorite = !list[indexOf].isFavorite)
         //storeSelectGym(list[indexOf])
         viewModelScope.launch {
-            val updateGymsList = toggleFavoriteGym(id, !list[indexOf].isFavorite)
-            state = updateGymsList
+            val updateGymsList = gymsRepositoryImpl.toggleFavoriteGym(id, !list[indexOf].isFavorite)
+            _state = _state.copy(gyms = updateGymsList, isLoading = false)
         }
     }
 
-    private suspend fun toggleFavoriteGym(gymId: Int, currentFavoriteState: Boolean) =
-        withContext(Dispatchers.IO) {
-            gymDao.update(GymFavoriteState(gymId, currentFavoriteState))
-            return@withContext gymDao.getAll()
-        }
 
     private fun storeSelectGym(gymModel: GymsResponseDto) {
         val savedStateHandle = stateHandle.get<List<Int>?>(GYM_IDS).orEmpty().toMutableList()

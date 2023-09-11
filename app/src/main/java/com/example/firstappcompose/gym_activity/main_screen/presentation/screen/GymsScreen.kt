@@ -3,8 +3,10 @@ package com.example.firstappcompose.gym_activity.main_screen.presentation.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,14 +39,24 @@ import com.example.firstappcompose.ui.theme.Purple40
 @Composable
 fun GymList(onItemCLicked: (Int) -> Unit) {
     val viewModel: GymViewModel = viewModel()
-    LazyColumn {
-        items(viewModel.state) { gym ->
-            GymItem(
-                gym,
-                onFavoriteItemClicked = { viewModel.handleFavoriteState(it) },
-                onItemCLicked = { onItemCLicked(it) })
+    val state = viewModel.state.value
+    val dataIsLoading = state.isLoading
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        LazyColumn {
+            items(state.gyms) { gym ->
+                GymItem(
+                    gym,
+                    onFavoriteItemClicked = { viewModel.handleFavoriteState(it) },
+                    onItemCLicked = { onItemCLicked(it) })
+            }
         }
+        if (dataIsLoading) CircularProgressIndicator()
+        state.errorMessage?.let { Text(text = it) }
     }
+
 }
 
 

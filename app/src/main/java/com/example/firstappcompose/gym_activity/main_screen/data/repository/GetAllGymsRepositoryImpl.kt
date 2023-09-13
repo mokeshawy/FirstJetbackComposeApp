@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class GymsRepositoryImpl {
+class GetAllGymsRepositoryImpl {
 
     private var gymsApiServices: GymsApiServices = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
@@ -18,14 +18,17 @@ class GymsRepositoryImpl {
 
     private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
 
-    suspend fun getAllGyms() = withContext(Dispatchers.IO) {
+    suspend fun getAllGymsList() = withContext(Dispatchers.IO) {
+        gymDao.getAll()
+    }
+
+    suspend fun loadGymsList() = withContext(Dispatchers.IO) {
         try {
             updateLocalDatabase()
         } catch (e: Exception) {
             if (gymDao.getAll().isEmpty())
                 throw Exception("Something want wrong, please try again later")
         }
-        gymDao.getAll()
     }
 
     private suspend fun updateLocalDatabase() {
@@ -38,11 +41,4 @@ class GymsRepositoryImpl {
             }
         )
     }
-
-
-    suspend fun toggleFavoriteGym(gymId: Int, currentFavoriteState: Boolean) =
-        withContext(Dispatchers.IO) {
-            gymDao.update(GymFavoriteState(gymId, currentFavoriteState))
-            return@withContext gymDao.getAll()
-        }
 }

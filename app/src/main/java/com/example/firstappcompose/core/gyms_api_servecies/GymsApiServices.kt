@@ -1,6 +1,6 @@
 package com.example.firstappcompose.core.gyms_api_servecies
 
-import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
+import com.example.firstappcompose.gyms.gyms_list.data.data_model.remote_model.response.GymsResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 

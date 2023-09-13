@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.main_screen.presentation.screen
+package com.example.firstappcompose.gyms.gyms_list.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -29,17 +29,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
-import com.example.firstappcompose.gym_activity.main_screen.domain.viewmodel.GymViewModel
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsScreenState
 import com.example.firstappcompose.ui.theme.Purple40
 
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GymList(onItemCLicked: (Int) -> Unit) {
-    val viewModel: GymViewModel = viewModel()
-    val state = viewModel.state.value
+fun GymList(
+    state: GymsScreenState,
+    onFavoriteItemClicked: (Int, oldValue: Boolean) -> Unit,
+    onItemCLicked: (Int) -> Unit
+) {
     val dataIsLoading = state.isLoading
     Box(
         contentAlignment = Alignment.Center,
@@ -49,7 +50,9 @@ fun GymList(onItemCLicked: (Int) -> Unit) {
             items(state.gyms) { gym ->
                 GymItem(
                     gym,
-                    onFavoriteItemClicked = { viewModel.handleFavoriteState(it) },
+                    onFavoriteItemClicked = { id, oldValue ->
+                        onFavoriteItemClicked(id, oldValue)
+                    },
                     onItemCLicked = { onItemCLicked(it) })
             }
         }
@@ -62,8 +65,8 @@ fun GymList(onItemCLicked: (Int) -> Unit) {
 
 @Composable
 fun GymItem(
-    gymModel: GymsResponseDto,
-    onFavoriteItemClicked: (Int) -> Unit,
+    gymModel: GymsData,
+    onFavoriteItemClicked: (Int, oldValue: Boolean) -> Unit,
     onItemCLicked: (Int) -> Unit
 ) {
     val icon = if (gymModel.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder
@@ -77,7 +80,7 @@ fun GymItem(
             DefaultIcon(Icons.Filled.Place, Modifier.weight(0.15f))
             GymDetails(gymModel, Modifier.weight(0.70f))
             DefaultIcon(icon, Modifier.weight(0.15f)) {
-                onFavoriteItemClicked(gymModel.id)
+                onFavoriteItemClicked(gymModel.id, gymModel.isFavorite)
             }
         }
     }
@@ -97,7 +100,7 @@ fun DefaultIcon(icon: ImageVector, modifier: Modifier, onItemCLicked: () -> Unit
 
 @Composable
 fun GymDetails(
-    gymModel: GymsResponseDto,
+    gymModel: GymsData,
     modifier: Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start
 ) {

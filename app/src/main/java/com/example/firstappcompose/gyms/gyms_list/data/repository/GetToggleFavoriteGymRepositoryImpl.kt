@@ -1,8 +1,8 @@
-package com.example.firstappcompose.gym_activity.main_screen.data.repository
+package com.example.firstappcompose.gyms.gyms_list.data.repository
 
 import com.example.firstappcompose.application.GymsApplication
 import com.example.firstappcompose.core.room.room.GymDatabase
-import com.example.firstappcompose.gym_activity.main_screen.domain.model.GymFavoriteState
+import com.example.firstappcompose.gyms.gyms_list.data.data_model.local_model.LocalGymFavoriteState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,7 +13,7 @@ class GetToggleFavoriteGymRepositoryImpl {
 
     suspend fun toggleFavoriteGym(gymId: Int, state: Boolean) =
         withContext(Dispatchers.IO) {
-            return@withContext gymDao.update(GymFavoriteState(gymId, state))
+            return@withContext gymDao.update(LocalGymFavoriteState(gymId, state))
         }
 
 }

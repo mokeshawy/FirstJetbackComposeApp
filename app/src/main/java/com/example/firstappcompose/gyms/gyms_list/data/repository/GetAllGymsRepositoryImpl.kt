@@ -1,9 +1,11 @@
-package com.example.firstappcompose.gym_activity.main_screen.data.repository
+package com.example.firstappcompose.gyms.gyms_list.data.repository
 
 import com.example.firstappcompose.application.GymsApplication
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
 import com.example.firstappcompose.core.room.room.GymDatabase
-import com.example.firstappcompose.gym_activity.main_screen.domain.model.GymFavoriteState
+import com.example.firstappcompose.gyms.gyms_list.data.data_model.local_model.LocalGym
+import com.example.firstappcompose.gyms.gyms_list.data.data_model.local_model.LocalGymFavoriteState
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
@@ -19,7 +21,7 @@ class GetAllGymsRepositoryImpl {
     private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
 
     suspend fun getAllGymsList() = withContext(Dispatchers.IO) {
-        gymDao.getAll()
+        gymDao.getAll().map { GymsData(it.id, it.location, it.name, it.gymStatus, it.isFavorite) }
     }
 
     suspend fun loadGymsList() = withContext(Dispatchers.IO) {
@@ -34,10 +36,10 @@ class GetAllGymsRepositoryImpl {
     private suspend fun updateLocalDatabase() {
         val gyms = gymsApiServices.getGyms()
         val favoriteGymsList = gymDao.getFavoriteGyms()
-        gymDao.addAll(gyms)
+        gymDao.addAll(gyms.map { LocalGym(it.id, it.location, it.name, it.gymStatus) })
         gymDao.updateAll(
             favoriteGymsList.map {
-                GymFavoriteState(id = it.id, true)
+                LocalGymFavoriteState(id = it.id, true)
             }
         )
     }

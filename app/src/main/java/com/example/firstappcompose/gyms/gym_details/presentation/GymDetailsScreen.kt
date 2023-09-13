@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.gym_details.presentation
+package com.example.firstappcompose.gyms.gym_details.presentation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.firstappcompose.gym_activity.gym_details.domain.viewmodel.GymDetailsViewModel
-import com.example.firstappcompose.gym_activity.main_screen.presentation.screen.DefaultIcon
-import com.example.firstappcompose.gym_activity.main_screen.presentation.screen.GymDetails
+import com.example.firstappcompose.gyms.gym_details.domain.viewmodel.GymDetailsViewModel
+import com.example.firstappcompose.gyms.gyms_list.presentation.DefaultIcon
+import com.example.firstappcompose.gyms.gyms_list.presentation.GymDetails
 
 
 @Composable

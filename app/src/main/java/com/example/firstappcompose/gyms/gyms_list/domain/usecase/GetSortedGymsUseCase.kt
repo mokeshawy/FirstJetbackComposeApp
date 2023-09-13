@@ -1,6 +1,6 @@
-package com.example.firstappcompose.gym_activity.main_screen.domain.usecase
+package com.example.firstappcompose.gyms.gyms_list.domain.usecase
 
-import com.example.firstappcompose.gym_activity.main_screen.data.repository.GetAllGymsRepositoryImpl
+import com.example.firstappcompose.gyms.gyms_list.data.repository.GetAllGymsRepositoryImpl
 
 class GetSortedGymsUseCase {
 

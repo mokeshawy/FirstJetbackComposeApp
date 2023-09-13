@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.gym_details.domain.viewmodel
+package com.example.firstappcompose.gyms.gym_details.domain.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.firstappcompose.application.GymsApplication
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
 import com.example.firstappcompose.core.room.room.GymDatabase
-import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class GymDetailsViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
 
-    var state by mutableStateOf<GymsResponseDto?>(null)
+    var state by mutableStateOf<GymsData?>(null)
     private var apiServices: GymsApiServices
 
     private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
@@ -37,7 +37,8 @@ class GymDetailsViewModel(private val stateHandle: SavedStateHandle) : ViewModel
     private fun getGym(id: Int) {
         viewModelScope.launch {
             val gym = gymDao.getGymDetails(id)
-            state = gym
+            val gymData = GymsData(gym.id, gym.location, gym.name, gym.gymStatus, gym.isFavorite)
+            state = gymData
         }
     }
 

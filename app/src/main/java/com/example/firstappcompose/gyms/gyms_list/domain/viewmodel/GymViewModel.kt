@@ -1,4 +1,4 @@
-package com.example.firstappcompose.gym_activity.main_screen.domain.viewmodel
+package com.example.firstappcompose.gyms.gyms_list.domain.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -8,10 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.firstappcompose.gym_activity.main_screen.data.response.GymsResponseDto
-import com.example.firstappcompose.gym_activity.main_screen.domain.model.GymsScreenState
-import com.example.firstappcompose.gym_activity.main_screen.domain.usecase.GetInitialGymUseCase
-import com.example.firstappcompose.gym_activity.main_screen.domain.usecase.GetToggleFavoriteGymUseCase
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsScreenState
+import com.example.firstappcompose.gyms.gyms_list.domain.usecase.GetInitialGymUseCase
+import com.example.firstappcompose.gyms.gyms_list.domain.usecase.GetToggleFavoriteGymUseCase
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,26 +54,26 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
     }
 
 
-    fun handleFavoriteState(id: Int) {
+    fun handleFavoriteState(id: Int,oldVlue : Boolean) {
         val list = _state.gyms.toMutableList()
         val indexOf = list.indexOfFirst { it.id == id }
         //list[indexOf] = list[indexOf].copy(isFavorite = !list[indexOf].isFavorite)
         //storeSelectGym(list[indexOf])
         viewModelScope.launch {
-            val updateGymsList = getToggleFavoriteGymUseCase(id, list[indexOf].isFavorite)
+            val updateGymsList = getToggleFavoriteGymUseCase(id, oldVlue)
             _state = _state.copy(gyms = updateGymsList, isLoading = false)
         }
     }
 
 
-    private fun storeSelectGym(gymModel: GymsResponseDto) {
+    private fun storeSelectGym(gymModel: GymsData) {
         val savedStateHandle = stateHandle.get<List<Int>?>(GYM_IDS).orEmpty().toMutableList()
         if (gymModel.isFavorite) savedStateHandle.add(gymModel.id)
         else savedStateHandle.remove(gymModel.id)
         stateHandle[GYM_IDS] = savedStateHandle
     }
 
-    private fun List<GymsResponseDto>.retrieveGymIds(): List<GymsResponseDto> {
+    private fun List<GymsData>.retrieveGymIds(): List<GymsData> {
         stateHandle.get<List<Int>?>(GYM_IDS)?.let { ids ->
             val gymsMap = this.associateBy { it.id }.toMutableMap()
             ids.forEach { id ->

@@ -6,21 +6,18 @@ import com.example.firstappcompose.core.room.room.GymDatabase
 import com.example.firstappcompose.gyms.gyms_list.data.data_model.local_model.LocalGym
 import com.example.firstappcompose.gyms.gyms_list.data.data_model.local_model.LocalGymFavoriteState
 import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
+import com.example.firstappcompose.gyms.gyms_list.domain.repository.GetAllGymsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
-class GetAllGymsRepositoryImpl {
+class GetAllGymsRepositoryImpl @Inject constructor(private val gymsApiServices: GymsApiServices) :
+    GetAllGymsRepository {
 
-    private var gymsApiServices: GymsApiServices = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl("https://jetbackcompose-default-rtdb.firebaseio.com/")
-        .build().create(GymsApiServices::class.java)
 
     private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
 
-    suspend fun getAllGymsList() = withContext(Dispatchers.IO) {
+    override suspend fun getAllGymsList() = withContext(Dispatchers.IO) {
         gymDao.getAll().map { GymsData(it.id, it.location, it.name, it.gymStatus, it.isFavorite) }
     }
 

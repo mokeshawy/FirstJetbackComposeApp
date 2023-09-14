@@ -10,26 +10,25 @@ import com.example.firstappcompose.application.GymsApplication
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
 import com.example.firstappcompose.core.room.room.GymDatabase
 import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
-class GymDetailsViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
+@HiltViewModel
+class GymDetailsViewModel @Inject constructor(
+    private val apiServices: GymsApiServices,
+    stateHandle: SavedStateHandle
+) : ViewModel() {
 
     var state by mutableStateOf<GymsData?>(null)
-    private var apiServices: GymsApiServices
+
 
     private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
 
 
     init {
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://jetbackcompose-default-rtdb.firebaseio.com/")
-            .build()
-        apiServices = retrofit.create(GymsApiServices::class.java)
         val id = stateHandle.get<Int>("gym_id") ?: 0
         getGym(id)
     }

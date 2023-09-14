@@ -11,17 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.firstappcompose.gyms.gym_details.domain.viewmodel.GymDetailsViewModel
+import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
 import com.example.firstappcompose.gyms.gyms_list.presentation.DefaultIcon
 import com.example.firstappcompose.gyms.gyms_list.presentation.GymDetails
 
 
 @Composable
-fun GymDetailsScreen() {
-
-    val viewModel: GymDetailsViewModel = viewModel()
-    val item = viewModel.state
+fun GymDetailsScreen(item : GymsData?) {
 
     item?.let {
         Column(

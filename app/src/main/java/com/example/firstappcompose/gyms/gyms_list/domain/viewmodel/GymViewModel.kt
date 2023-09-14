@@ -12,16 +12,23 @@ import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
 import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsScreenState
 import com.example.firstappcompose.gyms.gyms_list.domain.usecase.GetInitialGymUseCase
 import com.example.firstappcompose.gyms.gyms_list.domain.usecase.GetToggleFavoriteGymUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 const val GYM_IDS = "GYM_IDS"
 
-class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
+@HiltViewModel
+class GymViewModel @Inject constructor(
+    private val getInitialGymUseCase: GetInitialGymUseCase,
+    private val getToggleFavoriteGymUseCase : GetToggleFavoriteGymUseCase,
+    private val stateHandle: SavedStateHandle
+) : ViewModel() {
 
     private var _state by mutableStateOf(
         GymsScreenState(gyms = emptyList(), isLoading = true)
@@ -31,9 +38,6 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
     private val job = Job()
     private val customCoroutine = CoroutineScope(context = job + Dispatchers.IO)
 
-    private val getInitialGymUseCase = GetInitialGymUseCase()
-
-    private val getToggleFavoriteGymUseCase = GetToggleFavoriteGymUseCase()
 
     private val errorHandler = CoroutineExceptionHandler { _, th ->
         th.printStackTrace()
@@ -54,7 +58,7 @@ class GymViewModel(private val stateHandle: SavedStateHandle) : ViewModel() {
     }
 
 
-    fun handleFavoriteState(id: Int,oldVlue : Boolean) {
+    fun handleFavoriteState(id: Int, oldVlue: Boolean) {
         val list = _state.gyms.toMutableList()
         val indexOf = list.indexOfFirst { it.id == id }
         //list[indexOf] = list[indexOf].copy(isFavorite = !list[indexOf].isFavorite)

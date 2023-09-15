@@ -6,9 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.firstappcompose.application.GymsApplication
 import com.example.firstappcompose.core.gyms_api_servecies.GymsApiServices
-import com.example.firstappcompose.core.room.room.GymDatabase
+import com.example.firstappcompose.core.room.room.GymsDAO
 import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +18,11 @@ import javax.inject.Inject
 @HiltViewModel
 class GymDetailsViewModel @Inject constructor(
     private val apiServices: GymsApiServices,
+    private val gymsDAO: GymsDAO,
     stateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var state by mutableStateOf<GymsData?>(null)
-
-
-    private var gymDao = GymDatabase.getDaoInstance(GymsApplication.getApplicationContext())
 
 
     init {
@@ -35,7 +32,7 @@ class GymDetailsViewModel @Inject constructor(
 
     private fun getGym(id: Int) {
         viewModelScope.launch {
-            val gym = gymDao.getGymDetails(id)
+            val gym = gymsDAO.getGymDetails(id)
             val gymData = GymsData(gym.id, gym.location, gym.name, gym.gymStatus, gym.isFavorite)
             state = gymData
         }

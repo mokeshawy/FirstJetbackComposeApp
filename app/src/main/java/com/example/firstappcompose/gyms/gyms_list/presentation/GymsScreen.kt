@@ -27,8 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.firstappcompose.core.Const
 import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsData
 import com.example.firstappcompose.gyms.gyms_list.domain.domain_model.GymsScreenState
 import com.example.firstappcompose.ui.theme.Purple40
@@ -56,7 +59,11 @@ fun GymList(
                     onItemCLicked = { onItemCLicked(it) })
             }
         }
-        if (dataIsLoading) CircularProgressIndicator()
+        if (dataIsLoading) CircularProgressIndicator(
+            Modifier.semantics {
+                this.contentDescription = Const.GYM_LIST_LOADING
+            }
+        )
         state.errorMessage?.let { Text(text = it) }
     }
 
